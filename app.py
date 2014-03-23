@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-from flask import Flask, render_template, request, jsonify, url_for
+from flask import Flask, render_template, request, jsonify, url_for, redirect
 from remoteTimereg import RemoteTimereg
 from datetime import datetime, timedelta
 import itsdangerous
@@ -76,8 +76,8 @@ def createlink():
 def view(token):
     pass
 
-@app.route('/')
-def index():
+@app.route('/create')
+def create():
     r = RemoteTimereg()
     r.login(
         app.config["ACHIEVO_URI"],
@@ -85,9 +85,11 @@ def index():
         app.config["ACHIEVO_PASSWORD"]
     )
     projects = parseProjects(r.projects())
-
     return render_template('index.jade', projects=projects)
 
+@app.route('/')
+def index():
+    return redirect(url_for("create"))
 
 if __name__ == '__main__':
     app.run()
