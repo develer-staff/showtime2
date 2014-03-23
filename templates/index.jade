@@ -1,0 +1,126 @@
+doctype html
+html
+    head
+        link(rel="stylesheet", href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css")
+
+        link(rel="stylesheet", href="static/styles/bootstrap.min.css")
+        link(rel="stylesheet", href="static/styles/bootstrap-select.min.css")
+        link(rel="stylesheet", href="static/styles/datepicker.css")
+        link(rel="stylesheet", href="static/styles/main.css")
+
+        script(src="static/js/jquery-1.11.0.min.js")
+        script(src="static/js/bootstrap.min.js")
+        script(src="static/js/bootstrap-select.min.js")
+        script(src="static/js/bootstrap-datepicker.js")
+
+        meta(charset="utf-8")
+        meta(name="viewport", content="width=device-width")
+
+        title Showtime
+    body(ng-app="startPageApp")
+        //-
+        //- Navigation
+        //-
+
+        nav.navbar.navbar-default.navbar-static-top(role="navigation")
+            .navbar-header
+                a.navbar-brand(href="//showtime.develer.com") Showtime
+
+
+        //-
+        //- Main
+        //-
+
+        .container
+            //- .jumbotron
+            //-     h2
+            //-         | Expose your localhost to Internet
+
+            //-     p
+            //-         | Develer.me is the local installation of
+            //-         a(href="http://localtunnel.me")
+            //-             |  localtunnel.me
+            //-         | , to be used by Develer hackers to show gorgeous work-in-progress version
+            //-         | of their software to the outside world.
+
+            .row
+                .col-md-4.col-md-offset-4
+
+                    form.form
+                        .form-group
+                            label(for="projects") Choose one or more projects...
+                            select#projects.selectpicker.show-tick(data-live-search="true", multiple, data-width="auto")
+                                | {% for p in projects %}
+                                option {{ p }}
+                                | {% endfor %}
+
+                        .form-group
+                            label(for="expire") Select link expiration (default: 1 year)
+                            input#expire.datepicker(type="text")
+
+                        .form-group
+                            button#submit.btn.btn-default.btn-primary(type="submit") Create link
+
+                        .form-group#result-group(style="display: none")
+                            label(for="result") Showtime link:
+                            input#result(type="text", readonly)
+
+
+            .row
+                .col-md-8.col-md-offset-2
+                    h3 Notes
+                    ul
+                        li You can open tunnels only while within the Develer network, or through the VPN
+
+
+            //-
+            //- Footer
+            //-
+
+            .row
+                img(src="static/images/develer-logo.png", style="float:right", width="150px")
+
+
+        script(type='text/javascript').
+            $(document).ready(function() {
+
+                $('.selectpicker').selectpicker();
+
+                var end = new Date();
+                end.setFullYear(end.getFullYear()+1);
+                $('.datepicker').datepicker({
+                    startDate: new Date(),
+                    endDate: end,
+                    weekstart: 1,
+                    autoclose: true,
+                    format: "yyyy-mm-dd"
+                });
+
+                $('#result').click(function() {
+                    $(this).select();
+                });
+
+                $('#submit').click(function(e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/createlink",
+                        dataType: "json",
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify({
+                            projects: $('#projects').val(),
+                            expire: $('#expire').val()
+                        }),
+                        success: function(data) {
+                            $('#result').val(data.link);
+                            $('#result-group').show();
+                        }
+                    });
+                })
+
+
+
+            });
+
+
