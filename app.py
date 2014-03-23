@@ -3,7 +3,7 @@
 
 from flask import Flask, render_template, request, jsonify, url_for, redirect
 from remoteTimereg import RemoteTimereg
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import itsdangerous
 import requests
 
@@ -55,6 +55,9 @@ def dvlrit(url):
 def createlink():
     projects = request.json['projects']
     expire = request.json['expire']
+
+    if not expire:
+        expire = (date.today() + timedelta(365)).strftime("%Y-%m-%d")
 
     s = itsdangerous.URLSafeSerializer(app.config["SECRET_KEY"])
     token = s.dumps({
