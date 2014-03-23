@@ -33,16 +33,9 @@ html
         //-
 
         .container
-            //- .jumbotron
-            //-     h2
-            //-         | Expose your localhost to Internet
-
-            //-     p
-            //-         | Develer.me is the local installation of
-            //-         a(href="http://localtunnel.me")
-            //-             |  localtunnel.me
-            //-         | , to be used by Develer hackers to show gorgeous work-in-progress version
-            //-         | of their software to the outside world.
+            .jumbotron
+                h3
+                    | Create a showtime link
 
             .row
                 .col-md-4.col-md-offset-4
@@ -56,7 +49,7 @@ html
                                 | {% endfor %}
 
                         .form-group
-                            label(for="expire") Select link expiration (default: 1 year)
+                            label(for="expire") Set link expiration (default: 1 year)
                             input#expire.datepicker(type="text")
 
                         .form-group#submit-group
@@ -65,14 +58,6 @@ html
                         .form-group#result-group(style="display: none")
                             label(for="result") Showtime link:
                             input#result(type="text", readonly)
-
-
-            .row
-                .col-md-8.col-md-offset-2
-                    h3 Notes
-                    ul
-                        li You can open tunnels only while within the Develer network, or through the VPN
-
 
             //-
             //- Footer
