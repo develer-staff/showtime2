@@ -88,7 +88,7 @@ def create():
         app.config["ACHIEVO_PASSWORD"]
     )
     projects = parseProjects(r.projects())
-    return render_template('index.jade', projects=projects)
+    return render_template('create.jade', projects=projects)
 
 @app.route('/')
 def index():
