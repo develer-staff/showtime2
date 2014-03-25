@@ -33,7 +33,6 @@ def parseProjects(etree):
 def parseHours(etree, encoding):
     hours = []
     for element in etree:
-        print repr(element.get("remark"))
         hours.append(
             {
                 "project": element.get("project"),
