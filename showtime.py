@@ -134,7 +134,7 @@ def view(token):
         abort(404)
 
     expire = datetime.strptime(data["expire"], "%Y-%m-%d")
-    if expire <= datetime.today() or 1:
+    if expire <= datetime.today():
         return render_template("view_error.jade", error="EXPIRED"), 403
 
     r = RemoteTimereg()
