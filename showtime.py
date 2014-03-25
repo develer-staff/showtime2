@@ -13,9 +13,6 @@ app = Flask(__name__)
 app.config.from_envvar("SHOWTIME_SETTINGS")
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 
-app.config["DEBUG"] = True
-app.debug = True
-
 ##################################
 ## Achievo response XML parsers ##
 ##################################
