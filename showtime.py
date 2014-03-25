@@ -48,10 +48,10 @@ def parseHours(etree, encoding):
     return hours
 
 def dvlrit(url):
-    r = requests.get(app.config["DVLRIT_URL"] + "/short_url", timeout=3.0, params={
+    r = requests.post(app.config["DVLRIT_URL"] + "/short_url", timeout=3.0, params={
         "q": url
     })
-    return r.data[14:-3]
+    return r.content[14:-3]
 
 ##################################
 
