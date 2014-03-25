@@ -1,4 +1,4 @@
 .codeintel
 *.pyc
 showtime.cfg
-
+venv
