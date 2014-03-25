@@ -95,7 +95,7 @@ class MonthDate(object):
     def next(self):
         y = self.year
         m = self.month + 1
-        if m == 12:
+        if m == 13:
             y += 1
             m = 1
         return MonthDate(y, m)
