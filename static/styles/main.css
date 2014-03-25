@@ -14,6 +14,7 @@ h1, h2, h3, h4 {
 	color: #ee8b22;
 }
 
+
 a {
     color: #3e5e9a;
 }
@@ -45,4 +46,63 @@ a:hover {
 .tooltip a {
 	text-decoration: none;
 	color: #ee8b22;
+}
+
+
+/* view: hours table */
+
+#hours td.nowrap {
+    white-space: nowrap;
+}
+
+
+/* view: pagination of months */
+
+.pagination > li > a {
+    background-color: #3e5e9a;
+}
+
+.pagination > li > a:hover {
+    background-color: #ee8b22;
+    color: white;
+}
+
+.pagination > li > a.nonclickable {
+    background-color: #3e5e9a;
+}
+
+.pagination > li > a.nonclickable:hover {
+    background-color: #3e5e9a;
+}
+
+
+
+
+div.dataTables_length label {
+    width: 460px;
+    float: left;
+    text-align: left;
+}
+
+div.dataTables_length select {
+    width: 75px;
+}
+
+div.dataTables_filter label {
+    float: right;
+    width: 460px;
+}
+
+div.dataTables_info {
+    padding-top: 8px;
+}
+
+div.dataTables_paginate {
+    float: right;
+    margin: 0;
+}
+
+table {
+    margin: 1em 0;
+    clear: both;
 }
