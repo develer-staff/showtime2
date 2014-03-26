@@ -77,6 +77,9 @@ def createlink():
 
 
 class MonthDate(object):
+    """
+    Store and represent the couple "year+month" (without day).
+    """
     def __init__(self, year, month):
         self.year = year
         self.month = month
