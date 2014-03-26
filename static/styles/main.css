@@ -51,7 +51,7 @@ a:hover {
 
 /* view: hours table */
 
-#hours td.nowrap {
+#hours .nowrap {
     white-space: nowrap;
 }
 
@@ -69,38 +69,18 @@ a:hover {
 
 .pagination > li > a.nonclickable {
     background-color: #3e5e9a;
+    text-align: center;
 }
 
 .pagination > li > a.nonclickable:hover {
     background-color: #3e5e9a;
 }
 
-
-
-
-div.dataTables_length label {
-    width: 460px;
-    float: left;
-    text-align: left;
+#curmonth {
+    width: 10em;
 }
 
-div.dataTables_length select {
-    width: 75px;
-}
 
-div.dataTables_filter label {
-    float: right;
-    width: 460px;
-}
-
-div.dataTables_info {
-    padding-top: 8px;
-}
-
-div.dataTables_paginate {
-    float: right;
-    margin: 0;
-}
 
 table {
     margin: 1em 0;
