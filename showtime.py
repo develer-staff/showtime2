@@ -177,9 +177,10 @@ def view(token):
                 hour["time"]
             ])
         string.seek(0)
+        fn = "develer-%s-%s.csv" % ("-".join(data["projects"]), from_date.englishformat())
         return send_file(
             string,
-            attachment_filename="develer-%s-%s.csv" % ("-".join(data["projects"]), from_date.englishformat()),
+            attachment_filename=fn,
             as_attachment=True)
 
     prev_url = url_for("view", token=token, date=str(from_date.prev()))
