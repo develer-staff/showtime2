@@ -209,11 +209,12 @@ def view(token):
     next_url = url_for("view", token=token, date=str(from_date.next()))
     cur_month = from_date.englishformat()
 
+    num_projects = len(data["projects"])
     project_name = ", ".join(data["projects"])
     csv_url = url_for("view", token=token, date=from_date, csv=True)
 
     return render_template("view.jade",
-        project_name=project_name,
+        project_name=project_name, num_projects=num_projects,
         hours=hours, total=total, cur_month=cur_month,
         prev_url=prev_url, next_url=next_url, csv_url=csv_url)
 

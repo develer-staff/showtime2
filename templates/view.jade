@@ -59,7 +59,9 @@ html
 
                 table#hours.table.table-bordered.table-striped.tabled-condensed
                     thead
+                        {% if num_projects > 1 %}
                         th Project
+                        {% endif %}
                         th Date
                         th Time
                         th User
@@ -68,7 +70,9 @@ html
                     tbody
                         | {% for h in hours %}
                         tr
+                            {% if num_projects > 1 %}
                             td.nowrap {{ h.project }}
+                            {% endif %}
                             td.nowrap {{ h.date }}
                             td.nowrap {{ h.time }}
                             td {{ h.user }}
