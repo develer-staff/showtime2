@@ -115,10 +115,10 @@ class MonthDate(object):
         return MonthDate(today.year, today.month)
 
     def englishformat(self):
-        return date(self.year, self.month, 1).strftime("%B %Y")
+        return self.topython().strftime("%B %Y")
 
-    def isoformat(self):
-        return str(self) + "-01"
+    def topython(self):
+        return date(self.year, self.month, 1)
 
     def __str__(self):
         return "%04d-%02d" % (self.year, self.month)
@@ -146,11 +146,11 @@ def view(token):
     if "date" in request.args:
         from_date = MonthDate.fromstring(request.args["date"])
     else:
-        from_date = MonthDate.today()
+        from_date = MonthDate.today().prev()
 
     to_date = from_date.next()
     hours = parseHours(
-        r.hours(data["projects"], from_date.isoformat(), to_date.isoformat()),
+        r.hours(data["projects"], from_date.topython(), to_date.topython()),
         app.config["ACHIEVO_ENCODING"])
 
     # Filter non billable hours

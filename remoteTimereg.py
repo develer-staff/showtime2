@@ -7,6 +7,7 @@
 import urllib, urllib2, urlparse
 from xml.etree import ElementTree as ET
 from xml.parsers.expat import ExpatError
+from datetime import timedelta
 
 ACHIEVO_ENCODING = "ISO-8859-15"
 
@@ -120,9 +121,9 @@ class RemoteTimereg:
         params = {}
         params["projectids"] = projectids
         if from_date:
-            params["from_date"] = from_date
+            params["from_date"] = from_date.isoformat()
         if to_date:
-            params["to_date"] = to_date
+            params["to_date"] = (to_date - timedelta(1)).isoformat()
         hours = self._urlDispatch("report", **params)
         return hours
 
