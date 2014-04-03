@@ -1,0 +1,2 @@
+web: env SHOWTIME_SETTINGS=showtime.cfg python showtime.py
+tunnel: ssh -NL 12380:localhost:80 neo
