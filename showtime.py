@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-from flask import Flask, render_template, request, jsonify, url_for, redirect, send_file, abort
+from flask import Flask, render_template, request, jsonify, url_for, \
+    redirect, send_file, abort, session
 from remoteTimereg import RemoteTimereg
 from datetime import datetime, timedelta, date
 from cStringIO import StringIO
+import os
 import csv
 import itsdangerous
 import requests
@@ -50,6 +52,26 @@ def dvlrit(url):
     return r.content[14:-3]
 
 ##################################
+# CSRF protection
+# http://flask.pocoo.org/snippets/3/
+
+@app.before_request
+def csrf_protect():
+    if request.method == "POST":
+        token = session.pop('_csrf_token', None)
+        if not token or token != request.json.get('_csrf_token'):
+            abort(403)
+
+def generate_csrf_token():
+    if '_csrf_token' not in session:
+        session['_csrf_token'] = os.urandom(16).encode("hex")
+    return session['_csrf_token']
+
+app.jinja_env.globals['csrf_token'] = generate_csrf_token
+
+##################################
+# Views
+#
 
 @app.route('/createlink', methods=["POST"])
 def createlink():

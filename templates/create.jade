@@ -127,10 +127,16 @@ html
                         contentType: 'application/json; charset=utf-8',
                         data: JSON.stringify({
                             projects: $('#projects').val(),
-                            expire: $('#expire').val()
+                            expire: $('#expire').val(),
+                            _csrf_token: "{{ csrf_token() }}"
                         }),
                         success: function(data) {
                             $('#result').val(data.link);
+                            $('#result-group').show();
+                            spinner.stop();
+                        },
+                        error: function(data) {
+                            $('#result').val("ERROR");
                             $('#result-group').show();
                             spinner.stop();
                         }
