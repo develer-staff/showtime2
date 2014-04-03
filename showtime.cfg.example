@@ -1,0 +1,13 @@
+SECRET_KEY = 'replace me with generated random data'
+
+# Achievo configuration information
+ACHIEVO_URI = "http://localhost:12380/"
+ACHIEVO_USER = "myusername"
+ACHIEVO_PASSWORD = "mypassword"
+ACHIEVO_ENCODING = "ISO-8859-15"
+
+# Develer URL shortener API (only accessible from Develer LAN/VPN)
+DVLRIT_URL = "https://dvlr.develer.com/dvlr.it"
+
+# Debug mode
+DEBUG=1
