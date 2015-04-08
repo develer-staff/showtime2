@@ -4,6 +4,7 @@
 from flask import Flask, render_template, request, jsonify, url_for, \
     redirect, send_file, abort, session
 from remoteTimereg import RemoteTimereg
+from odooTimereg import OdooTimereg
 from datetime import datetime, timedelta, date
 from cStringIO import StringIO
 import os
@@ -23,9 +24,10 @@ app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 #from xml.etree import ElementTree as ET
 #import datetime
 
-def parseProjects(etree):
+
+def parseProjects(pdict):
     projects = []
-    for element in etree:
+    for element in pdict:
         projects.append(element.get("name"))
     return projects
 
@@ -148,6 +150,7 @@ class MonthDate(object):
 
 @app.route('/view/<token>')
 def view(token):
+    import ipdb;ipdb.set_trace()
     s = itsdangerous.URLSafeSerializer(app.config["SECRET_KEY"])
     try:
         data = s.loads(token)
@@ -158,11 +161,12 @@ def view(token):
     if expire <= datetime.today():
         return render_template("view_error.jade", error="EXPIRED"), 403
 
-    r = RemoteTimereg()
-    r.login(
-        app.config["ACHIEVO_URI"],
-        app.config["ACHIEVO_USER"],
-        app.config["ACHIEVO_PASSWORD"]
+    o = OdooTimereg()
+    client = o.login(
+        app.config["ODOO_URI"],
+        app.config["ODOO_USER"],
+        app.config["ODOO_PASSWORD"],
+        app.config["ODOO_DB"]
     )
 
     if "date" in request.args:
@@ -172,7 +176,8 @@ def view(token):
 
     to_date = from_date.next()
     hours = parseHours(
-        r.hours(data["projects"], from_date.topython(), to_date.topython()),
+        client.hours(
+            data["projects"], from_date.topython(), to_date.topython()),
         app.config["ACHIEVO_ENCODING"])
 
     # Filter non billable hours
@@ -220,13 +225,14 @@ def view(token):
 
 @app.route('/create')
 def create():
-    r = RemoteTimereg()
-    r.login(
-        app.config["ACHIEVO_URI"],
-        app.config["ACHIEVO_USER"],
-        app.config["ACHIEVO_PASSWORD"]
+    o = OdooTimereg()
+    client = o.login(
+        app.config["ODOO_URI"],
+        app.config["ODOO_USER"],
+        app.config["ODOO_PASSWORD"],
+        app.config["ODOO_DB"]
     )
-    projects = parseProjects(r.projects())
+    projects = parseProjects(o.projects(client))
     return render_template('create.jade', projects=projects)
 
 @app.route('/')
