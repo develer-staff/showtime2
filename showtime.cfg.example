@@ -4,6 +4,7 @@ SECRET_KEY = 'replace me with generated random data'
 ODOO_URI = "http://localhost:12380/"
 ODOO_USER = "myusername"
 ODOO_PASSWORD = "mypassword"
+ODOO_DB = "dbname"
 
 # Develer URL shortener API (only accessible from Develer LAN/VPN)
 DVLRIT_URL = "https://dvlr.develer.com/dvlr.it"
