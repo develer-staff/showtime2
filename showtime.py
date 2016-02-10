@@ -16,14 +16,9 @@ app = Flask(__name__)
 app.config.from_envvar("SHOWTIME_SETTINGS")
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
 
-##################################
-## Achievo response XML parsers ##
-##################################
-
-## Needed only if you extract the parson module
-#from xml.etree import ElementTree as ET
-#import datetime
-
+##############################
+## Openerp response parsers ##
+##############################
 
 def parseProjects(pdict):
     projects = []
@@ -39,9 +34,9 @@ def parseHours(etree, encoding):
                 "project": element.get("project"),
                 "date": datetime.strptime(element.get("date"), "%Y-%m-%d").date(),
                 "time": timedelta(minutes = int(element.get("time"))),
-                "remark": element.get("remark").decode(encoding),
+                "remark": element.get("remark"),
                 "activity": element.get("activity"),
-                "phase": element.get("phase"),
+                "billable": element.get("billable"),
                 "user": element.get("user"),
             }
         )
@@ -150,7 +145,6 @@ class MonthDate(object):
 
 @app.route('/view/<token>')
 def view(token):
-    import ipdb;ipdb.set_trace()
     s = itsdangerous.URLSafeSerializer(app.config["SECRET_KEY"])
     try:
         data = s.loads(token)
@@ -175,13 +169,11 @@ def view(token):
         from_date = MonthDate.today().prev()
 
     to_date = from_date.next()
-    hours = parseHours(
-        client.hours(
-            data["projects"], from_date.topython(), to_date.topython()),
-        app.config["ACHIEVO_ENCODING"])
+    hours = o.hours(client, data["projects"], from_date.topython(), to_date.topython())
+    hours = parseHours(hours, "utf-8")
 
     # Filter non billable hours
-    hours = [h for h in hours if h["phase"] != "non billable"]
+    hours = [h for h in hours if h["billable"]]
 
     total = 0
     for h in hours:
@@ -193,11 +185,10 @@ def view(token):
     if "csv" in request.args:
         string = StringIO()
         writer = csv.writer(string)
-        writer.writerow(["Project", "Phase", "Date", "User", "Remark", "Time"])
+        writer.writerow(["Project", "Date", "User", "Remark", "Time"])
         for hour in hours:
             writer.writerow([
                 hour["project"],
-                hour["phase"],
                 hour["date"].strftime("%d %b %Y"),
                 hour["user"],
                 hour["remark"].encode("utf-8"),
