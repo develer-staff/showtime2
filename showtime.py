@@ -26,7 +26,7 @@ def parseProjects(pdict):
         projects.append(element.get("name"))
     return projects
 
-def parseHours(etree, encoding):
+def parseHours(etree):
     hours = []
     for element in etree:
         hours.append(
@@ -170,7 +170,7 @@ def view(token):
 
     to_date = from_date.next()
     hours = o.hours(client, data["projects"], from_date.topython(), to_date.topython())
-    hours = parseHours(hours, "utf-8")
+    hours = parseHours(hours)
 
     # Filter non billable hours
     hours = [h for h in hours if h["billable"]]
