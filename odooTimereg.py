@@ -30,7 +30,7 @@ class OdooTimereg:
 
     def projects(self, client):
         project_model = client.AccountAnalyticAccount
-        ids = project_model.search(['use_timesheets=True', 'invoice_on_timesheets=True'])
+        ids = project_model.search(['use_timesheets=True', 'invoice_on_timesheets=True', 'state=open'])
         projects = project_model.read(ids, ['name'])
         return projects
 
