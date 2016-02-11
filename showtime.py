@@ -55,11 +55,9 @@ def dvlrit(url):
 @app.before_request
 def csrf_protect():
     if request.method == "POST":
-        token = session.get('_csrf_token', None)
+        token = session.pop('_csrf_token', None)
         if not token or token != request.json.get('_csrf_token'):
             abort(403)
-    else:
-        session.pop('_csrf_token', None)
 
 def generate_csrf_token():
     if '_csrf_token' not in session:
