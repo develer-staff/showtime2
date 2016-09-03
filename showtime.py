@@ -3,7 +3,6 @@
 
 from flask import Flask, render_template, request, jsonify, url_for, \
     redirect, send_file, abort, session
-from remoteTimereg import RemoteTimereg
 from odooTimereg import OdooTimereg
 from datetime import datetime, timedelta, date
 from cStringIO import StringIO

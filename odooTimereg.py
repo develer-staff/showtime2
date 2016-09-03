@@ -4,11 +4,7 @@
 ## odoo remote interface ##
 ###########################
 
-import urllib, urllib2, urlparse
 import erppeek
-from xml.etree import ElementTree as ET
-from xml.parsers.expat import ExpatError
-from datetime import timedelta
 
 
 class AccessDenied(Exception):
