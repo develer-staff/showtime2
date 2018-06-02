@@ -5,6 +5,7 @@
 ###########################
 
 import erppeek
+from collections import defaultdict
 
 
 class AccessDenied(Exception):
@@ -57,3 +58,32 @@ class OdooTimereg:
 
         return hours
 
+    def userid(self, client, username):
+        """Get the OpenERP userid of username"""
+        ids = client.ResUsers.search(['alias_name=%s' % username])
+        if len(ids) != 1:
+            return None
+        return ids[0]
+
+    def summary(self, client, userid, from_date, to_date):
+        timesheet_model = client.HrAnalyticTimesheet
+
+        print [
+            'user_id = %s' % userid,
+            'date >= %s' % from_date,
+            'date <= %s' % to_date,
+        ]
+
+        ids = timesheet_model.search([
+            'user_id = %s' % userid,
+            'date >= %s' % from_date,
+            'date <= %s' % to_date,
+        ])
+        if not ids:
+            return []
+
+        totals = defaultdict(float)
+        data = timesheet_model.read(ids, ['date', 'unit_amount'])
+        for item in data:
+            totals[item['date']] += float(item['unit_amount'])
+        return totals

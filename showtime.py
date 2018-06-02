@@ -66,6 +66,31 @@ def generate_csrf_token():
 app.jinja_env.globals['csrf_token'] = generate_csrf_token
 
 ##################################
+# Exception handler
+#
+
+class InvalidUsageJSON(Exception):
+    status_code = 400
+
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
+
+@app.errorhandler(InvalidUsageJSON)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
+
+##################################
 # Views
 #
 
@@ -224,6 +249,40 @@ def create():
     )
     projects = parseProjects(o.projects(client))
     return render_template('create.jade', projects=projects)
+
+@app.route('/summary/<user>')
+def summary(user):
+    o = OdooTimereg()
+    client = o.login(
+        app.config["ODOO_URI"],
+        app.config["ODOO_USER"],
+        app.config["ODOO_PASSWORD"],
+        app.config["ODOO_DB"]
+    )
+
+    if "from_date" in request.args:
+        from_date = datetime.strptime(request.args["from_date"], "%Y-%m-%d")
+    else:
+        from_date = datetime.datetime.today()
+
+    if "to_date" in request.args:
+        to_date = datetime.strptime(request.args["to_date"], "%Y-%m-%d")
+    else:
+        to_date = datetime.datetime.today()
+
+    if to_date < from_date:
+        raise InvalidUsageJSON("to_date is before from_date")
+    if (to_date - from_date).days > 28:
+        raise InvalidUsageJSON("too many days")
+
+    uid = o.userid(client, user)
+    if uid is None:
+        raise InvalidUsageJSON("username unknown")
+
+    totals = o.summary(client, user, from_date, to_date)
+
+    return jsonify(totals)
+
 
 @app.route('/')
 def index():
