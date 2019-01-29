@@ -32,6 +32,14 @@ class OdooTimereg:
         return projects
 
     def hours(self, client, projectids, from_date=None, to_date=None):
+        # Read all billable types and differentiate between billable and non-billable
+        # using the discount factor (if < 100.0, we consider it billable, since 100%
+        # is non billable).
+        billable = set()
+        for fact in client.Hr_timesheet_invoiceFactor.read([]):
+            if fact["factor"] < 100:
+                billable.add(fact["id"])
+
         timesheet_model = client.HrAnalyticTimesheet
         ids = timesheet_model.search([
             'account_name=%s' % ",".join(['"'+p+'"' for p in projectids]),
@@ -53,7 +61,12 @@ class OdooTimereg:
             h["user"] = item["user_id"][1]
             h["remark"] = item["line_id"][1]
             h["time"] = int(item["unit_amount"]*60+.5)
-            h["billable"] = bool(item['to_invoice'])
+
+            # to_invoice is either a boolean, or a [id, name] field.
+            if type(item['to_invoice']) == bool:
+                h["billable"] = bool(item['to_invoice'])
+            else:
+                h["billable"] = item['to_invoice'][0] in billable
             hours.append(h)
 
         return hours
