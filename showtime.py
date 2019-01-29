@@ -263,12 +263,12 @@ def summary(user):
     if "from_date" in request.args:
         from_date = datetime.strptime(request.args["from_date"], "%Y-%m-%d")
     else:
-        from_date = datetime.datetime.today()
+        from_date = datetime.today()
 
     if "to_date" in request.args:
         to_date = datetime.strptime(request.args["to_date"], "%Y-%m-%d")
     else:
-        to_date = datetime.datetime.today()
+        to_date = datetime.today()
 
     if to_date < from_date:
         raise InvalidUsageJSON("to_date is before from_date")
