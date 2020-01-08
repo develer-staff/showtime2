@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, jsonify, url_for, \
     redirect, send_file, abort, session
 from odooTimereg import OdooTimereg
 from datetime import datetime, timedelta, date
-from cStringIO import StringIO
+from io import StringIO
 import os
 import csv
 import itsdangerous
@@ -60,7 +60,7 @@ def csrf_protect():
 
 def generate_csrf_token():
     if '_csrf_token' not in session:
-        session['_csrf_token'] = os.urandom(16).encode("hex")
+        session['_csrf_token'] = os.urandom(16)
     return session['_csrf_token']
 
 app.jinja_env.globals['csrf_token'] = generate_csrf_token
