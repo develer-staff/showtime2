@@ -26,60 +26,50 @@ class OdooTimereg:
             password=self.password)
 
     def projects(self, client):
-        project_model = client.AccountAnalyticAccount
-        ids = project_model.search(['use_timesheets=True', 'invoice_on_timesheets=True', 'state=("open","pending")'])
-        projects = project_model.read(ids, ['name'])
+        project_model = client.ProjectProject
+        project_ids = project_model.search([
+            ('allow_timesheets', '=', True),
+            ('billable_type', '!=', 'no'),
+            ])
+        projects = project_model.read(project_ids, ['name'])
         return projects
 
     def hours(self, client, projectids, from_date=None, to_date=None):
-        # Read all billable types and differentiate between billable and non-billable
-        # using the discount factor (if < 100.0, we consider it billable, since 100%
-        # is non billable).
-        billable = set()
-        for fact in client.Hr_timesheet_invoiceFactor.read([]):
-            if fact["factor"] < 100:
-                billable.add(fact["id"])
-
-        timesheet_model = client.HrAnalyticTimesheet
+        timesheet_model = client.AccountAnalyticLine
         ids = timesheet_model.search([
-            'account_name=%s' % ",".join(['"'+p+'"' for p in projectids]),
-            'date >= %s' % from_date,
-            'date < %s' % to_date,
+            ('project_id', 'in', projectids),
+            ('date', '>=', from_date.strftime('%Y-%m-%d')),
+            ('date', '<', to_date.strftime('%Y-%m-%d')),
+            ('timesheet_invoice_type', '!=', 'non_billable_project'),
         ])
         if not ids:
             return []
 
-        data = timesheet_model.read(ids, ['account_name', 'user_id', 'date', 'line_id', 'to_invoice', 'unit_amount'])
-
+        data = timesheet_model.read(ids, ['project_id', 'user_id', 'date',
+                                          'name', 'timesheet_invoice_type',
+                                          'unit_amount'])
         hours = []
         for item in data:
-            if not item['to_invoice']:
-                continue
             h = {}
-            h["project"] = item["account_name"]
+            h["project"] = item["project_id"]
             h["date"] = item["date"]
             h["user"] = item["user_id"][1]
-            h["remark"] = item["line_id"][1]
+            h["remark"] = item['name']
             h["time"] = int(item["unit_amount"]*60+.5)
-
-            # to_invoice is either a boolean, or a [id, name] field.
-            if type(item['to_invoice']) == bool:
-                h["billable"] = bool(item['to_invoice'])
-            else:
-                h["billable"] = item['to_invoice'][0] in billable
+            h["billable"] = True
             hours.append(h)
 
         return hours
 
     def userid(self, client, username):
         """Get the OpenERP userid of username"""
-        ids = client.ResUsers.search(['alias_name=%s' % username])
+        ids = client.ResUsers.search(['login=%s' % username])
         if len(ids) != 1:
             return None
         return ids[0]
 
     def summary(self, client, userid, from_date, to_date):
-        timesheet_model = client.HrAnalyticTimesheet
+        timesheet_model = client.AccountAnalyticLine
 
         print [
             'user_id = %s' % userid,
