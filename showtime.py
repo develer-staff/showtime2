@@ -289,4 +289,4 @@ def index():
     return redirect(url_for("create"))
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
