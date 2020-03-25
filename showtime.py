@@ -3,6 +3,7 @@
 
 from flask import Flask, render_template, request, jsonify, url_for, \
     redirect, send_file, abort, session
+from flask_wtf.csrf import CSRFProtect
 from odooTimereg import OdooTimereg
 from datetime import datetime, timedelta, date
 from io import StringIO
@@ -14,6 +15,10 @@ import requests
 app = Flask(__name__)
 app.config.from_envvar("SHOWTIME_SETTINGS")
 app.jinja_env.add_extension('pyjade.ext.jinja.PyJadeExtension')
+
+# CSRF protection
+csrf = CSRFProtect(app)
+csrf.init_app(app)
 
 ##############################
 ## Openerp response parsers ##
@@ -46,24 +51,6 @@ def dvlrit(url):
         "q": url
     })
     return r.content[14:-3]
-
-##################################
-# CSRF protection
-# http://flask.pocoo.org/snippets/3/
-
-@app.before_request
-def csrf_protect():
-    if request.method == "POST":
-        token = session.pop('_csrf_token', None)
-        if not token or token != request.json.get('_csrf_token'):
-            abort(403)
-
-def generate_csrf_token():
-    if '_csrf_token' not in session:
-        session['_csrf_token'] = os.urandom(16)
-    return session['_csrf_token']
-
-app.jinja_env.globals['csrf_token'] = generate_csrf_token
 
 ##################################
 # Exception handler
