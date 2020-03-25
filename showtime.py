@@ -47,10 +47,13 @@ def parseHours(etree):
     return hours
 
 def dvlrit(url):
+    '''
     r = requests.post(app.config["DVLRIT_URL"] + "/short_url", timeout=3.0, params={
         "q": url
     })
     return r.content[14:-3]
+    '''
+    return url
 
 ##################################
 # Exception handler
