@@ -36,11 +36,18 @@ class OdooTimereg:
 
     def hours(self, client, projectids, from_date=None, to_date=None):
         timesheet_model = client.AccountAnalyticLine
+        # 2020-01-01: Migration date from Openerp to Odoo.
+        # An imported timesheet (old one) has 'non_billable_project' value
+        # in 'timesheet_invoice_type' when a timesheet is not billable
+        # because in Openerp, 'timesheet_invoice_type' was required.
+        # In Odoo this field is not required, so it can be empty.
         ids = timesheet_model.search([
             ('project_id', 'in', projectids),
             ('date', '>=', from_date.strftime('%Y-%m-%d')),
             ('date', '<', to_date.strftime('%Y-%m-%d')),
+            '|',
             ('timesheet_invoice_type', '!=', 'non_billable_project'),
+            ('timesheet_invoice_type', '=', False),
         ])
         if not ids:
             return []
