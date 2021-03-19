@@ -1,7 +1,7 @@
 ERPpeek==1.6.3
 Flask==0.10.1
 itsdangerous==0.24
-Jinja2==2.8
+Jinja2==2.11.3
 MarkupSafe==0.23
 pyjade==2.2.0
 requests==2.2.1
