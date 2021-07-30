@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, jsonify, url_for, \
 from flask_wtf.csrf import CSRFProtect
 from odooTimereg import OdooTimereg
 from datetime import datetime, timedelta, date
-from io import StringIO
+import io
 import os
 import csv
 import itsdangerous
@@ -194,23 +194,29 @@ def view(token):
         h["time"] = "%dh %dm" % (s // 3600, (s % 3600) // 60)
         total += s
     total = "%dh %dm" % (total // 3600, (total % 3600) // 60)
-
     if "csv" in request.args:
-        string = StringIO()
+        string = io.StringIO()
         writer = csv.writer(string)
         writer.writerow(["Project", "Date", "User", "Remark", "Time"])
+
         for hour in hours:
             writer.writerow([
                 hour["project"],
                 hour["date"].strftime("%d %b %Y"),
                 hour["user"],
-                hour["remark"].encode("utf-8"),
+                hour["remark"],
                 hour["time"]
             ])
-        string.seek(0)
+        # Creating the byteIO object from the StringIO Object
+        mem = io.BytesIO()
+        mem.write(string.getvalue().encode())
+
+        # seeking was necessary. Python 3.5.2, Flask 0.12.2
+        mem.seek(0)
+        string.close()
         fn = "develer-%s-%s.csv" % ("-".join(data["projects"]), from_date.englishformat())
         return send_file(
-            string,
+            mem,
             attachment_filename=fn,
             as_attachment=True)
 
